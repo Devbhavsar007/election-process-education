@@ -30,10 +30,11 @@ router.get('/:userId', authenticate, async (req, res) => {
 // POST /api/checklist/update
 router.post('/update', authenticate, async (req, res) => {
   try {
-    const { userId, items } = req.body;
-    if (!userId || !items) return res.status(400).json({ error: 'userId and items required' });
+    const { items } = req.body;
+    if (!items) return res.status(400).json({ error: 'items required' });
+    // Use authenticated user's ID from JWT, not from request body (prevents IDOR)
     const checklist = await Checklist.findOneAndUpdate(
-      { userId },
+      { userId: req.userId },
       { items },
       { new: true, upsert: true }
     );

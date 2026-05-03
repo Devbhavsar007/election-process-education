@@ -1,5 +1,13 @@
 import jwt from 'jsonwebtoken';
 
+const getJwtSecret = () => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret && process.env.NODE_ENV === 'production') {
+    throw new Error('JWT_SECRET must be set in production environment');
+  }
+  return secret || 'fallback-secret-dev-only';
+};
+
 export const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -7,7 +15,7 @@ export const authenticate = (req, res, next) => {
   }
   const token = authHeader.split(' ')[1];
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret-dev-only');
+    const decoded = jwt.verify(token, getJwtSecret());
     req.userId = decoded.userId;
     req.user = decoded;
     next();
@@ -17,5 +25,5 @@ export const authenticate = (req, res, next) => {
 };
 
 export const generateToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET || 'fallback-secret-dev-only', { expiresIn: '7d' });
+  return jwt.sign({ userId }, getJwtSecret(), { expiresIn: '7d' });
 };

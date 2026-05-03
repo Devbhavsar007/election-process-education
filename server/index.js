@@ -23,17 +23,34 @@ import healthRoutes from './routes/health.js';
 const app = express();
 const PORT = process.env.PORT || 5002;
 
-// Security
-app.use(helmet());
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production'
+// Allowed origins — configurable via env or defaults
+const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(s => s.trim())
+  : process.env.NODE_ENV === 'production'
     ? ['https://civicverse.vercel.app', 'https://electionvote-sigma.vercel.app', 'https://civicverse-client-784946024453.us-central1.run.app']
-    : ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173'],
+    : ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173'];
+
+// Security
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://www.googletagmanager.com", "https://www.google-analytics.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", ...ALLOWED_ORIGINS, "https://www.google-analytics.com"],
+    }
+  },
+  crossOriginEmbedderPolicy: false
+}));
+app.use(cors({
+  origin: ALLOWED_ORIGINS,
   credentials: true
 }));
 app.use(mongoSanitize());
 app.use(express.json({ limit: '1mb' }));
-app.use(morgan('dev'));
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(generalLimiter);
 
 // Routes
@@ -50,10 +67,13 @@ app.use('/api/checklist', checklistRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/health', healthRoutes);
 
-// Global error handler
+// Global error handler — sanitize errors in production
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err.message);
-  res.status(500).json({ error: 'Internal server error' });
+  const message = process.env.NODE_ENV === 'production'
+    ? 'Internal server error'
+    : err.message;
+  res.status(500).json({ error: message });
 });
 
 // Start

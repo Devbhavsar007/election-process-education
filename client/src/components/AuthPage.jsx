@@ -60,7 +60,7 @@ const ParticleGrid = () => {
     draw();
     return () => { window.removeEventListener('resize', resize); window.removeEventListener('mousemove', onMouse); cancelAnimationFrame(raf); };
   }, []);
-  return <canvas ref={canvasRef} style={{ position: 'fixed', inset: 0, zIndex: 0 }} />;
+  return <canvas ref={canvasRef} style={{ position: 'fixed', inset: 0, zIndex: 0 }} aria-hidden="true" />;
 };
 
 const AuthPage = ({ onBack, onNavigate }) => {
@@ -117,21 +117,21 @@ const AuthPage = ({ onBack, onNavigate }) => {
           </AnimatePresence>
           <p className="auth-subtitle">{isLogin ? 'Sign in to your voter dashboard.' : 'Start your digital democracy journey.'}</p>
         </div>
-        {error && <div className="auth-error">{error}</div>}
-        <form className="auth-form" onSubmit={handleSubmit} style={{ transform: "translateZ(30px)" }}>
+        {error && <div className="auth-error" role="alert" aria-live="assertive">{error}</div>}
+        <form className="auth-form" onSubmit={handleSubmit} style={{ transform: "translateZ(30px)" }} noValidate>
           {!isLogin && (
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="input-group">
-              <label>Full Name</label>
-              <input type="text" placeholder="Your name" value={name} onChange={e => setName(e.target.value)} required />
+              <label htmlFor="auth-name">Full Name</label>
+              <input id="auth-name" type="text" placeholder="Your name" value={name} onChange={e => setName(e.target.value)} required autoComplete="name" />
             </motion.div>
           )}
           <div className="input-group">
-            <label>Email Address</label>
-            <input type="email" placeholder="name@example.com" value={email} onChange={e => setEmail(e.target.value)} required />
+            <label htmlFor="auth-email">Email Address</label>
+            <input id="auth-email" type="email" placeholder="name@example.com" value={email} onChange={e => setEmail(e.target.value)} required autoComplete="email" />
           </div>
           <div className="input-group">
-            <label>Password</label>
-            <input type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required />
+            <label htmlFor="auth-password">Password</label>
+            <input id="auth-password" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} autoComplete={isLogin ? 'current-password' : 'new-password'} />
           </div>
           <motion.button className="auth-submit-btn" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} disabled={loading}>
             {loading ? 'Please wait...' : isLogin ? 'Sign In' : 'Create Account'}
@@ -148,8 +148,8 @@ const AuthPage = ({ onBack, onNavigate }) => {
           {isLogin ? "New to CivicVerse?" : "Have an account?"}
           <button className="auth-toggle-link" onClick={() => { setIsLogin(!isLogin); setError(''); }}>{isLogin ? 'Sign Up' : 'Sign In'}</button>
         </div>
-        <button onClick={onBack} className="back-btn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <button onClick={onBack} className="back-btn" aria-label="Return to home page">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
           Return to home
         </button>
       </motion.div>

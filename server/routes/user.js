@@ -32,6 +32,10 @@ router.post('/init', authenticate, async (req, res) => {
 // GET /api/user/:userId
 router.get('/:userId', authenticate, async (req, res) => {
   try {
+    // Authorization: only allow users to access their own profile
+    if (req.params.userId !== req.userId) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
     const user = await User.findById(req.params.userId).select('-passwordHash');
     if (!user) return res.status(404).json({ error: 'User not found' });
     res.json({ user });

@@ -69,6 +69,8 @@ const Navbar = ({ onNavigate, currentView = 'landing' }) => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.8, ease: [0.21, 0.45, 0.32, 0.9] }}
+      aria-label="Main navigation"
+      role="navigation"
     >
       <motion.button
         className="nav-left"
@@ -122,6 +124,9 @@ const Navbar = ({ onNavigate, currentView = 'landing' }) => {
             onClick={() => setLangOpen(!langOpen)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            aria-expanded={langOpen}
+            aria-haspopup="listbox"
+            aria-label={`Language selector: ${LANGUAGES.find(l => l.code === selectedLang)?.label || 'English'}`}
           >
             <Globe size={16} />
             <span>{LANGUAGES.find(l => l.code === selectedLang)?.label || 'EN'}</span>
@@ -133,12 +138,16 @@ const Navbar = ({ onNavigate, currentView = 'landing' }) => {
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
+              role="listbox"
+              aria-label="Select language"
             >
               {LANGUAGES.map(l => (
                 <button
                   key={l.code}
                   className={`lang-option ${selectedLang === l.code ? 'active' : ''}`}
                   onClick={() => { setSelectedLang(l.code); setLangOpen(false); }}
+                  role="option"
+                  aria-selected={selectedLang === l.code}
                 >
                   {l.label}
                 </button>

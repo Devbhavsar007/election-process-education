@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "node --watch index.js"
+    "dev": "node --watch index.js",
+    "test": "node --experimental-vm-modules tests/auth.test.js && node --experimental-vm-modules tests/health.test.js"
   },
   "dependencies": {
     "@google-cloud/language": "^6.5.0",

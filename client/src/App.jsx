@@ -203,7 +203,7 @@ function App() {
   return (
     <div style={{ padding: '0', backgroundColor: 'var(--bg-primary)', minHeight: '100vh' }}>
       <Navbar onNavigate={handleNavigate} currentView={view} />
-      <main>
+      <main id="main-content">
         <HeroHeader onStart={() => setView('auth')} />
       </main>
       <Footer onNavigate={handleNavigate} />

@@ -32,13 +32,28 @@ router.get('/', authenticate, aiLimiter, async (req, res) => {
 // POST /api/quiz/submit
 router.post('/submit', authenticate, async (req, res) => {
   try {
-    const { answers } = req.body;
+    const { answers, questions } = req.body;
     if (!answers) return res.status(400).json({ error: 'Answers required' });
+
     // Calculate score based on correct answers
-    const totalQuestions = Object.keys(answers).length || 5;
-    const correctCount = Math.round(Math.random() * totalQuestions); // Simplified — real scoring would compare with stored correct answers
+    let correctCount = 0;
+    const totalQuestions = questions?.length || Object.keys(answers).length || 5;
+
+    if (questions && Array.isArray(questions)) {
+      // Compare each answer with the correct option from the questions
+      questions.forEach((q) => {
+        const userAnswer = answers[q.id];
+        if (userAnswer !== undefined && userAnswer === q.correct) {
+          correctCount++;
+        }
+      });
+    } else {
+      // Fallback: count provided answers (can't verify without questions)
+      correctCount = Object.keys(answers).length;
+    }
+
     const score = Math.round((correctCount / totalQuestions) * 100);
-    await QuizResult.create({ userId: req.userId, score, answers });
+    await QuizResult.create({ userId: req.userId, score, answers, totalQuestions, correctCount });
     res.json({ score, total: totalQuestions, correct: correctCount });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });

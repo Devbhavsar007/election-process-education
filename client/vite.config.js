@@ -12,5 +12,25 @@ export default defineConfig({
         changeOrigin: true
       }
     }
+  },
+  build: {
+    // Chunk splitting for better caching
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) {
+            return 'react-vendor';
+          }
+          if (id.includes('node_modules/firebase')) {
+            return 'firebase-vendor';
+          }
+          if (id.includes('node_modules/framer-motion')) {
+            return 'animation-vendor';
+          }
+        }
+      }
+    },
+    chunkSizeWarningLimit: 300,
+    sourcemap: false,
   }
 })

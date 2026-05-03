@@ -32,6 +32,7 @@ const Footer = ({ onNavigate }) => {
           <div className="footer-logo-wrapper"><CivicLogo /><span className="footer-logo-text">CivicVerse</span></div>
           <p>AI-powered election learning platform for the world's largest democracy. Empowering 950M+ voters with civic knowledge.</p>
         </div>
+        <nav aria-label="Footer navigation" style={{ display: 'contents' }}>
         {cols.map((col, i) => (
           <div key={i} className="footer-column">
             <h4>{col.title}</h4>
@@ -48,6 +49,7 @@ const Footer = ({ onNavigate }) => {
             </ul>
           </div>
         ))}
+        </nav>
       </motion.div>
       <div className="footer-bottom">
         <div className="footer-copyright">© {new Date().getFullYear()} CivicVerse. Built for Digital Democracy.</div>
