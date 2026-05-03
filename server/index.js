@@ -27,7 +27,7 @@ const PORT = process.env.PORT || 5002;
 app.use(helmet());
 app.use(cors({
   origin: process.env.NODE_ENV === 'production'
-    ? ['https://civicverse.vercel.app', 'https://electionvote-sigma.vercel.app']
+    ? ['https://civicverse.vercel.app', 'https://electionvote-sigma.vercel.app', 'https://civicverse-client-784946024453.us-central1.run.app']
     : ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173'],
   credentials: true
 }));
